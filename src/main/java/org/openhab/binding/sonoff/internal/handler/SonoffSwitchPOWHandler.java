@@ -93,7 +93,6 @@ public class SonoffSwitchPOWHandler extends SonoffBaseDeviceHandler {
             consumptionTask.cancel(true);
             this.consumptionTask = null;
         }
-        super.cancelTasks();
     }
 
     @Override
