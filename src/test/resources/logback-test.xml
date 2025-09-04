@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console Appender for Test Output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- File Appender for Test Logs -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>target/test-logs/sonoff-tests.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Sonoff Binding Specific Loggers -->
+    <logger name="org.openhab.binding.sonoff" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </logger>
+    
+    <!-- Test Framework Loggers -->
+    <logger name="org.junit" level="INFO" />
+    <logger name="org.mockito" level="WARN" />
+    <logger name="org.testcontainers" level="INFO" />
+    <logger name="com.github.tomakehurst.wiremock" level="WARN" />
+    
+    <!-- HTTP Client Logging for Integration Tests -->
+    <logger name="org.eclipse.jetty" level="WARN" />
+    <logger name="org.apache.http" level="WARN" />
+    
+    <!-- Root Logger -->
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

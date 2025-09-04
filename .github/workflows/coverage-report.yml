@@ -1,0 +1,342 @@
+name: Test Coverage Report
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run coverage report daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      coverage_threshold:
+        description: 'Minimum coverage threshold'
+        required: false
+        default: '85'
+        type: string
+
+jobs:
+  coverage-report:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        java-version: [17]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for trend analysis
+    
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Set up Node.js (for report publishing)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install bc for calculations
+      run: sudo apt-get update && sudo apt-get install -y bc xmlstarlet
+    
+    - name: Configure coverage thresholds
+      run: |
+        THRESHOLD="${{ github.event.inputs.coverage_threshold || '85' }}"
+        echo "COVERAGE_THRESHOLD=$THRESHOLD" >> $GITHUB_ENV
+        
+        # Update POM with custom threshold if provided
+        if [ "$THRESHOLD" != "85" ]; then
+          sed -i "s/<jacoco.line.coverage.minimum>.*<\/jacoco.line.coverage.minimum>/<jacoco.line.coverage.minimum>0.$THRESHOLD<\/jacoco.line.coverage.minimum>/" pom.xml
+        fi
+    
+    - name: Run tests with coverage
+      run: |
+        echo "Running tests with coverage collection..."
+        mvn clean test -P unit-tests
+        
+        # Run integration tests if they exist
+        if mvn help:all-profiles | grep -q "integration-tests"; then
+          mvn verify -P integration-tests
+        fi
+    
+    - name: Generate JaCoCo reports
+      run: |
+        echo "Generating JaCoCo coverage reports..."
+        mvn jacoco:report
+    
+    - name: Generate custom coverage reports
+      run: |
+        echo "Generating custom coverage reports..."
+        mvn compile test-compile
+        mvn exec:java -Dexec.mainClass="org.openhab.binding.sonoff.coverage.TestCoverageReporter" \
+                      -Dexec.classpathScope=test || true
+    
+    - name: Extract coverage metrics
+      id: coverage
+      run: |
+        # Extract coverage from JaCoCo XML report
+        XML_REPORT="target/site/jacoco/jacoco.xml"
+        
+        if [ -f "$XML_REPORT" ]; then
+          # Extract line coverage
+          LINE_COVERED=$(xmlstarlet sel -t -v "//counter[@type='LINE']/@covered" "$XML_REPORT" 2>/dev/null || echo "0")
+          LINE_MISSED=$(xmlstarlet sel -t -v "//counter[@type='LINE']/@missed" "$XML_REPORT" 2>/dev/null || echo "0")
+          
+          # Extract branch coverage
+          BRANCH_COVERED=$(xmlstarlet sel -t -v "//counter[@type='BRANCH']/@covered" "$XML_REPORT" 2>/dev/null || echo "0")
+          BRANCH_MISSED=$(xmlstarlet sel -t -v "//counter[@type='BRANCH']/@missed" "$XML_REPORT" 2>/dev/null || echo "0")
+          
+          # Calculate percentages
+          if [ "$LINE_COVERED" != "0" ] || [ "$LINE_MISSED" != "0" ]; then
+            LINE_TOTAL=$((LINE_COVERED + LINE_MISSED))
+            LINE_PERCENT=$(echo "scale=2; $LINE_COVERED * 100 / $LINE_TOTAL" | bc -l)
+          else
+            LINE_PERCENT="0"
+          fi
+          
+          if [ "$BRANCH_COVERED" != "0" ] || [ "$BRANCH_MISSED" != "0" ]; then
+            BRANCH_TOTAL=$((BRANCH_COVERED + BRANCH_MISSED))
+            BRANCH_PERCENT=$(echo "scale=2; $BRANCH_COVERED * 100 / $BRANCH_TOTAL" | bc -l)
+          else
+            BRANCH_PERCENT="0"
+          fi
+          
+          echo "line_coverage=$LINE_PERCENT" >> $GITHUB_OUTPUT
+          echo "branch_coverage=$BRANCH_PERCENT" >> $GITHUB_OUTPUT
+          echo "line_covered=$LINE_COVERED" >> $GITHUB_OUTPUT
+          echo "line_total=$LINE_TOTAL" >> $GITHUB_OUTPUT
+          echo "branch_covered=$BRANCH_COVERED" >> $GITHUB_OUTPUT
+          echo "branch_total=$BRANCH_TOTAL" >> $GITHUB_OUTPUT
+          
+          echo "Coverage: Line $LINE_PERCENT%, Branch $BRANCH_PERCENT%"
+        else
+          echo "Coverage report not found"
+          echo "line_coverage=0" >> $GITHUB_OUTPUT
+          echo "branch_coverage=0" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Generate coverage badge
+      run: |
+        # Create coverage badge
+        COVERAGE="${{ steps.coverage.outputs.line_coverage }}"
+        COVERAGE_INT=$(echo "$COVERAGE" | cut -d. -f1)
+        
+        # Determine badge color
+        if [ "$COVERAGE_INT" -ge 90 ]; then
+          COLOR="brightgreen"
+        elif [ "$COVERAGE_INT" -ge 80 ]; then
+          COLOR="yellow"
+        elif [ "$COVERAGE_INT" -ge 70 ]; then
+          COLOR="orange"
+        else
+          COLOR="red"
+        fi
+        
+        # Generate badge URL
+        BADGE_URL="https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}"
+        echo "BADGE_URL=$BADGE_URL" >> $GITHUB_ENV
+        
+        # Download badge
+        mkdir -p target/coverage-reports
+        curl -o target/coverage-reports/coverage-badge.svg "$BADGE_URL"
+    
+    - name: Validate coverage thresholds
+      run: |
+        echo "Validating coverage thresholds..."
+        
+        LINE_COVERAGE="${{ steps.coverage.outputs.line_coverage }}"
+        THRESHOLD="${{ env.COVERAGE_THRESHOLD }}"
+        
+        # Compare coverage with threshold
+        if [ "$(echo "$LINE_COVERAGE >= $THRESHOLD" | bc -l)" = "1" ]; then
+          echo "✅ Coverage threshold met: $LINE_COVERAGE% >= $THRESHOLD%"
+        else
+          echo "❌ Coverage threshold not met: $LINE_COVERAGE% < $THRESHOLD%"
+          echo "COVERAGE_FAILED=true" >> $GITHUB_ENV
+        fi
+    
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-reports
+        path: |
+          target/site/jacoco/
+          target/coverage-reports/
+        retention-days: 30
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: target/site/jacoco/jacoco.xml
+        flags: unittests
+        name: sonoff-binding-coverage
+        fail_ci_if_error: false
+    
+    - name: Comment PR with coverage
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const lineCoverage = '${{ steps.coverage.outputs.line_coverage }}';
+          const branchCoverage = '${{ steps.coverage.outputs.branch_coverage }}';
+          const lineCovered = '${{ steps.coverage.outputs.line_covered }}';
+          const lineTotal = '${{ steps.coverage.outputs.line_total }}';
+          const branchCovered = '${{ steps.coverage.outputs.branch_covered }}';
+          const branchTotal = '${{ steps.coverage.outputs.branch_total }}';
+          const threshold = '${{ env.COVERAGE_THRESHOLD }}';
+          
+          const coverageStatus = parseFloat(lineCoverage) >= parseFloat(threshold) ? '✅' : '❌';
+          
+          const comment = `## 📊 Test Coverage Report
+          
+          ${coverageStatus} **Coverage Status**: ${lineCoverage}% (threshold: ${threshold}%)
+          
+          | Metric | Coverage | Covered/Total |
+          |--------|----------|---------------|
+          | **Lines** | ${lineCoverage}% | ${lineCovered}/${lineTotal} |
+          | **Branches** | ${branchCoverage}% | ${branchCovered}/${branchTotal} |
+          
+          📈 [View detailed coverage report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          
+          ---
+          *Coverage report generated by [Sonoff Binding Test Suite](https://github.com/${{ github.repository }})*`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+    
+    - name: Update coverage badge in README
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Update README with coverage badge
+        if [ -f "README.md" ]; then
+          # Replace existing coverage badge or add new one
+          BADGE_MARKDOWN="![Coverage](https://img.shields.io/badge/coverage-${{ steps.coverage.outputs.line_coverage }}%25-$(echo ${{ env.BADGE_URL }} | sed 's/.*-//' | sed 's/\.svg//'))"
+          
+          if grep -q "!\[Coverage\]" README.md; then
+            sed -i "s|!\[Coverage\].*|$BADGE_MARKDOWN|" README.md
+          else
+            # Add badge after title
+            sed -i '1a\\n'"$BADGE_MARKDOWN"'\n' README.md
+          fi
+          
+          echo "Coverage badge updated in README.md"
+        fi
+    
+    - name: Publish coverage reports to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: target/site/jacoco
+        destination_dir: coverage
+        keep_files: false
+    
+    - name: Send Slack notification
+      if: always() && github.ref == 'refs/heads/main'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        custom_payload: |
+          {
+            "text": "Sonoff Binding Coverage Report",
+            "attachments": [{
+              "color": "${{ env.COVERAGE_FAILED == 'true' && 'danger' || 'good' }}",
+              "fields": [
+                {
+                  "title": "Line Coverage",
+                  "value": "${{ steps.coverage.outputs.line_coverage }}%",
+                  "short": true
+                },
+                {
+                  "title": "Branch Coverage", 
+                  "value": "${{ steps.coverage.outputs.branch_coverage }}%",
+                  "short": true
+                },
+                {
+                  "title": "Status",
+                  "value": "${{ env.COVERAGE_FAILED == 'true' && 'Failed' || 'Passed' }}",
+                  "short": true
+                },
+                {
+                  "title": "Threshold",
+                  "value": "${{ env.COVERAGE_THRESHOLD }}%",
+                  "short": true
+                }
+              ]
+            }]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: env.SLACK_WEBHOOK_URL != ''
+    
+    - name: Fail if coverage threshold not met
+      if: env.COVERAGE_FAILED == 'true'
+      run: |
+        echo "❌ Coverage threshold validation failed"
+        echo "Current coverage: ${{ steps.coverage.outputs.line_coverage }}%"
+        echo "Required threshold: ${{ env.COVERAGE_THRESHOLD }}%"
+        exit 1
+
+  coverage-trend:
+    runs-on: ubuntu-latest
+    needs: coverage-report
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Download coverage reports
+      uses: actions/download-artifact@v3
+      with:
+        name: coverage-reports
+        path: coverage-reports
+    
+    - name: Update coverage trend
+      run: |
+        # Create or update coverage trend data
+        TREND_FILE="coverage-trend.json"
+        DATE=$(date -u +"%Y-%m-%d")
+        LINE_COVERAGE="${{ needs.coverage-report.outputs.line_coverage || '0' }}"
+        BRANCH_COVERAGE="${{ needs.coverage-report.outputs.branch_coverage || '0' }}"
+        
+        # Create trend entry
+        TREND_ENTRY="{\"date\":\"$DATE\",\"line_coverage\":$LINE_COVERAGE,\"branch_coverage\":$BRANCH_COVERAGE,\"commit\":\"${{ github.sha }}\"}"
+        
+        # Update trend file
+        if [ -f "$TREND_FILE" ]; then
+          # Add new entry to existing file
+          jq ". += [$TREND_ENTRY]" "$TREND_FILE" > temp.json && mv temp.json "$TREND_FILE"
+        else
+          # Create new trend file
+          echo "[$TREND_ENTRY]" > "$TREND_FILE"
+        fi
+        
+        echo "Coverage trend updated"
+    
+    - name: Commit coverage trend
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add coverage-trend.json
+        git diff --staged --quiet || git commit -m "Update coverage trend data [skip ci]"
+        git push
