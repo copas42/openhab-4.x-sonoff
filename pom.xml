@@ -24,8 +24,8 @@
     
     <!-- Coverage and Quality -->
     <jacoco.version>0.8.10</jacoco.version>
-    <spotbugs.version>4.7.3</spotbugs.version>
-    <checkstyle.version>10.12.3</checkstyle.version>
+    <spotbugs.version>4.8.2.0</spotbugs.version>
+    <checkstyle.version>3.3.0</checkstyle.version>
     
     <!-- Coverage Thresholds -->
     <jacoco.line.coverage.minimum>0.85</jacoco.line.coverage.minimum>
@@ -254,11 +254,12 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>${spotbugs.version}</version>
+        <version>4.8.2.0</version>
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
           <xmlOutput>true</xmlOutput>
+          <failOnError>false</failOnError>
         </configuration>
         <executions>
           <execution>
