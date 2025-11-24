@@ -545,11 +545,8 @@
 			<channel id="current" typeId="current"/>
 			<channel id="voltage" typeId="voltage"/>
 			<channel id="power" typeId="power"/>
-			<channel id="todayKwh" typeId="todayKwh"/>
-			<channel id="yesterdayKwh" typeId="yesterdayKwh"/>
-			<channel id="sevenKwh" typeId="sevenKwh"/>
-			<channel id="thirtyKwh" typeId="thirtyKwh"/>
-			<channel id="hundredKwh" typeId="hundredKwh"/>
+			<channel id="monthKwh" typeId="monthKwh"/>
+			<channel id="dayKwh" typeId="dayKwh"/>
 			<channel id="localOnline" typeId="localOnline"/>
 			<channel id="cloudOnline" typeId="cloudOnline"/>
 			<channel id="ipaddress" typeId="ipaddress"/>

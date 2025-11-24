@@ -140,11 +140,8 @@ public class SonoffSwitchPOWR3Handler extends SonoffBaseDeviceHandler {
         updateState("current", newDevice.getParameters().getCurrent());
         updateState("rssi", newDevice.getParameters().getRssi());
         updateState("sled", newDevice.getParameters().getNetworkLED());
-        updateState("todayKwh", newDevice.getParameters().getTodayKwh());
-        updateState("yesterdayKwh", newDevice.getParameters().getYesterdayKwh());
-        updateState("sevenKwh", newDevice.getParameters().getSevenKwh());
-        updateState("thirtyKwh", newDevice.getParameters().getThirtyKwh());
-        updateState("hundredKwh", newDevice.getParameters().getHundredKwh());
+        updateState("dayKwh", newDevice.getParameters().getDayKwh());
+        updateState("monthKwh", newDevice.getParameters().getMonthKwh());
         updateState("ipaddress", newDevice.getIpAddress());
         // Connections
         this.cloud = newDevice.getCloud();

@@ -90,6 +90,18 @@
 		<description>Zigbee LED Status</description>
 	</channel-type>
 
+	<channel-type id="dayKwh">
+		<item-type>Number</item-type>
+		<label>Todays Energy Usage</label>
+		<description>Todays energy Usage in kwh</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="monthKwh">
+		<item-type>Number:Energy</item-type>
+		<label>Current Month Energy Usage</label>
+		<description>Current Month energy Usage in kwh</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="todayKwh">
 		<item-type>Number</item-type>
 		<label>Todays Energy Usage</label>

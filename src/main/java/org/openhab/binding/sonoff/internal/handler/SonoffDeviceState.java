@@ -129,19 +129,30 @@ public class SonoffDeviceState {
 
         // Electric
         if (params.get("power") != null) {
-            parameters.setPower(params.get("power").getAsString());
+            parameters.setPower(uiid.equals(190) ? Double.toString(params.get("power").getAsDouble() / 100)
+                    : params.get("power").getAsString());
         }
 
         if (params.get("voltage") != null) {
-            parameters.setVoltage(params.get("voltage").getAsString());
+            parameters.setVoltage(uiid.equals(190) ? Double.toString(params.get("voltage").getAsDouble() / 100)
+                    : params.get("voltage").getAsString());
         }
 
         if (params.get("current") != null) {
-            parameters.setCurrent(params.get("current").getAsString());
+            parameters.setCurrent(uiid.equals(190) ? Double.toString(params.get("current").getAsDouble() / 100)
+                    : params.get("current").getAsString());
         }
 
         if (params.get("battery") != null) {
             parameters.setBattery(params.get("battery").getAsDouble());
+        }
+
+        if (params.get("dayKwh") != null) {
+            parameters.setDayKwh(params.get("dayKwh").getAsDouble() / 100);
+        }
+
+        if (params.get("monthKwh") != null) {
+            parameters.setMonthKwh(params.get("monthKwh").getAsDouble() / 100);
         }
 
         // Energy

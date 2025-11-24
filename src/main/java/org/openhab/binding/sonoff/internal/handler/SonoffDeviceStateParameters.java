@@ -53,6 +53,8 @@ public class SonoffDeviceStateParameters {
     private QuantityType<ElectricCurrent> current = new QuantityType<ElectricCurrent>(0.0, (AMPERE));
     private QuantityType<ElectricPotential> battery = new QuantityType<ElectricPotential>(0.0, (VOLT));
     // Energy
+    private QuantityType<Energy> dayKwh = new QuantityType<Energy>(0.0, KILOWATT_HOUR);
+    private QuantityType<Energy> monthKwh = new QuantityType<Energy>(0.0, KILOWATT_HOUR);
     private QuantityType<Energy> todayKwh = new QuantityType<Energy>(0.0, KILOWATT_HOUR);
     private QuantityType<Energy> yesterdayKwh = new QuantityType<Energy>(0.0, KILOWATT_HOUR);
     private QuantityType<Energy> sevenKwh = new QuantityType<Energy>(0.0, KILOWATT_HOUR);
@@ -172,6 +174,22 @@ public class SonoffDeviceStateParameters {
 
     public void setTodayKwh(Double total) {
         this.todayKwh = new QuantityType<Energy>(total, KILOWATT_HOUR);
+    }
+
+    public QuantityType<Energy> getDayKwh() {
+        return this.dayKwh;
+    }
+
+    public void setDayKwh(Double total) {
+        this.dayKwh = new QuantityType<Energy>(total, KILOWATT_HOUR);
+    }
+
+    public QuantityType<Energy> getMonthKwh() {
+        return this.monthKwh;
+    }
+
+    public void setMonthKwh(Double total) {
+        this.monthKwh = new QuantityType<Energy>(total, KILOWATT_HOUR);
     }
 
     public QuantityType<Energy> getYesterdayKwh() {
