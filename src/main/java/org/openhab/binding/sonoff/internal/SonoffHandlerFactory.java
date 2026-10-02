@@ -90,6 +90,8 @@ public class SonoffHandlerFactory extends BaseThingHandlerFactory {
             case "83":
             case "84":
             case "126":
+            case "138":
+            case "139":
                 return new SonoffSwitchMultiHandler(thing);
             case "5":
                 return new SonoffSwitchPOWHandler(thing);
