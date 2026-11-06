@@ -26,6 +26,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonoff.internal.connection.SonoffConnectionManagerListener;
+import org.openhab.binding.sonoff.internal.dto.commands.BoolSwitch;
 import org.openhab.binding.sonoff.internal.dto.commands.MultiSwitch;
 import org.openhab.binding.sonoff.internal.dto.commands.SingleSwitch;
 import org.openhab.binding.sonoff.internal.dto.requests.WebsocketRequest;
@@ -175,7 +176,10 @@ public class SonoffCommunicationManager implements Runnable, SonoffConnectionMan
             queue.poll();
         }
 
-        if (message.getCommand().equals("switch") && ((SingleSwitch) message.getParams()).getSwitch() != null
+        if (message.getCommand().equals("switch") && (message.getParams() instanceof SingleSwitch)
+                && ((SingleSwitch) message.getParams()).getSwitch() != null
+                || message.getCommand().equals("switch") && (message.getParams() instanceof BoolSwitch)
+                        && ((BoolSwitch) message.getParams()).getSwitch() != null
                 || message.getCommand().equals("switches")
                         && !((MultiSwitch) message.getParams()).getSwitches().isEmpty()) {
             queue.addFirst(message);

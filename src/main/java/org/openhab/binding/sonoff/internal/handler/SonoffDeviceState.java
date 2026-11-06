@@ -133,14 +133,26 @@ public class SonoffDeviceState {
                     : params.get("power").getAsString());
         }
 
+        if (params.get("phase_0_p") != null) {
+            parameters.setPower(params.get("phase_0_p").getAsString());
+        }
+
         if (params.get("voltage") != null) {
             parameters.setVoltage(uiid.equals(190) ? Double.toString(params.get("voltage").getAsDouble() / 100)
                     : params.get("voltage").getAsString());
         }
 
+        if (params.get("phase_0_v") != null) {
+            parameters.setVoltage(params.get("phase_0_v").getAsString());
+        }
+
         if (params.get("current") != null) {
             parameters.setCurrent(uiid.equals(190) ? Double.toString(params.get("current").getAsDouble() / 100)
                     : params.get("current").getAsString());
+        }
+
+        if (params.get("phase_0_c") != null) {
+            parameters.setCurrent(params.get("phase_0_c").getAsString());
         }
 
         if (params.get("battery") != null) {

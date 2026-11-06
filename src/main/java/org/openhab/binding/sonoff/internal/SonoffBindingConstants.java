@@ -63,6 +63,7 @@ public class SonoffBindingConstants {
     public static final ThingTypeUID THING_TYPE_31 = new ThingTypeUID(BINDING_ID, "31"); // GSM Socket
     public static final ThingTypeUID THING_TYPE_32 = new ThingTypeUID(BINDING_ID, "32"); // POWR2
     public static final ThingTypeUID THING_TYPE_190 = new ThingTypeUID(BINDING_ID, "190"); // POWR3
+    public static final ThingTypeUID THING_TYPE_226 = new ThingTypeUID(BINDING_ID, "226"); // CK-BL602 DIN Relay
     public static final ThingTypeUID THING_TYPE_59 = new ThingTypeUID(BINDING_ID, "59"); // LED CONTROLLER
     public static final ThingTypeUID THING_TYPE_66 = new ThingTypeUID(BINDING_ID, "66"); // ZIGBEE Bridge
     public static final ThingTypeUID THING_TYPE_77 = new ThingTypeUID(BINDING_ID, "77"); // MICRO (USB)
@@ -109,7 +110,7 @@ public class SonoffBindingConstants {
 
                     THING_TYPE_28, THING_TYPE_RF1, THING_TYPE_RF2, THING_TYPE_RF3, THING_TYPE_RF4, THING_TYPE_RF6,
 
-                    THING_TYPE_32, THING_TYPE_190, THING_TYPE_59,
+                    THING_TYPE_32, THING_TYPE_190, THING_TYPE_59, THING_TYPE_226,
 
                     THING_TYPE_66, THING_TYPE_2026, THING_TYPE_ZCONTACT, THING_TYPE_ZWATER, THING_TYPE_1770,
                     THING_TYPE_ZLIGHT, THING_TYPE_ZSWITCH1, THING_TYPE_ZSWITCH2, THING_TYPE_ZSWITCH3,
@@ -129,7 +130,7 @@ public class SonoffBindingConstants {
 
                     THING_TYPE_28, THING_TYPE_RF1, THING_TYPE_RF2, THING_TYPE_RF3, THING_TYPE_RF4, THING_TYPE_RF6,
 
-                    THING_TYPE_32, THING_TYPE_190, THING_TYPE_59,
+                    THING_TYPE_32, THING_TYPE_190, THING_TYPE_59, THING_TYPE_226,
 
                     THING_TYPE_66, THING_TYPE_2026, THING_TYPE_ZCONTACT, THING_TYPE_ZWATER, THING_TYPE_1770,
                     THING_TYPE_ZLIGHT, THING_TYPE_ZSWITCH1, THING_TYPE_ZSWITCH2, THING_TYPE_ZSWITCH3,
@@ -163,6 +164,7 @@ public class SonoffBindingConstants {
 
         deviceTypes.put(32, THING_TYPE_32);
         deviceTypes.put(190, THING_TYPE_190);
+        deviceTypes.put(226, THING_TYPE_226);
         deviceTypes.put(59, THING_TYPE_59);
 
         deviceTypes.put(66, THING_TYPE_66);

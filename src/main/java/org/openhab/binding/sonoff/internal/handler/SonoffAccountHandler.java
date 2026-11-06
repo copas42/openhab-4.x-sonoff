@@ -162,15 +162,19 @@ public class SonoffAccountHandler extends BaseBridgeHandler
             // queueMessage(new SonoffCommandMessage());
             // For each device that supports streaming data send activation
             if (!mode.equals("local")) {
+                logger.debug("Running Activation task for non-local");
                 for (Map.Entry<String, SonoffDeviceState> entry : this.deviceStates.entrySet()) {
                     // Get the device status so we can check whether its back online
                     // queueMessage(new SonoffCommandMessage(entry.getKey()));
                     // if online send streaming data activation for certain devices
+                    logger.debug("Running Activation task for non-local: {}", entry.getValue().getDeviceid());
                     Integer uiid = entry.getValue().getUiid();
-                    if (uiid.equals(5) || uiid.equals(32) || uiid.equals(15) || uiid.equals(181) || uiid.equals(190)) {
+                    if (uiid.equals(5) || uiid.equals(32) || uiid.equals(15) || uiid.equals(181) || uiid.equals(190)
+                            || uiid.equals(226)) {
                         if (entry.getValue().getCloud()) {
                             UiActive uiActive = new UiActive();
                             uiActive.setUiActive(60);
+                            logger.debug("Sending uiActive: {}", entry.getValue().getDeviceid());
                             SonoffCommandMessage message = new SonoffCommandMessage("uiActive",
                                     entry.getValue().getDeviceid(), false, uiActive);
                             queueMessage(message);

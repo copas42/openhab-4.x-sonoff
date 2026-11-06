@@ -109,7 +109,7 @@ public class SonoffDeviceStateParameters {
     }
 
     public void setSwitch0(String switch0) {
-        this.switch0 = switch0.equals("on") ? OnOffType.ON : OnOffType.OFF;
+        this.switch0 = ((switch0.equals("on")) || (switch0.equals("true"))) ? OnOffType.ON : OnOffType.OFF;
     }
 
     public OnOffType getSwitch1() {
