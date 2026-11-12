@@ -4,6 +4,59 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact sensor</label>
+		<description>Open/Close sensor</description>
+	</channel-type>
+
+	<channel-type id="door-contact">
+		<item-type>Contact</item-type>
+		<label>Magnetic sensor</label>
+		<description>Open/Close door</description>
+	</channel-type>
+
+	<channel-type id="door-switch">
+		<item-type>Switch</item-type>
+		<label>Door</label>
+		<description>Open/Close door</description>
+	</channel-type>
+
+	<channel-type id="electrical-energy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy</label>
+		<description>Electrical energy</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="electric-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Power</label>
+		<description>Electric power</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="electric-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Electric current</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="electric-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Electric voltage</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Turn a device on/off</description>
+	</channel-type>
+
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
@@ -28,6 +81,12 @@
 		<item-type>Switch</item-type>
 		<label>Switch 3</label>
 		<description>Switch 3</description>
+	</channel-type>
+
+	<channel-type id="reed-switch">
+		<item-type>Switch</item-type>
+		<label>Reed switch</label>
+		<description>Open/Close sensor</description>
 	</channel-type>
 
 	<channel-type id="color">
@@ -79,12 +138,12 @@
 	</channel-type>
 
 
-	<channel-type id="sled">
+	<channel-type id="sled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Network LED Status</label>
 		<description>Network LED Status</description>
 	</channel-type>
-	<channel-type id="zled">
+	<channel-type id="zled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Zigbee LED Status</label>
 		<description>Zigbee LED Status</description>
@@ -154,6 +213,21 @@
 		<label>Button 4</label>
 		<description>Button 4</description>
 	</channel-type>
+	<channel-type id="button0TrigTime">
+		<item-type>DateTime</item-type>
+		<label>Button 1 Last Triggered</label>
+		<description>Button 1 Last Triggered Time</description>
+	</channel-type>
+	<channel-type id="button1TrigTime">
+		<item-type>DateTime</item-type>
+		<label>Button 2 Last Triggered</label>
+		<description>Button 2 Last Triggered Time</description>
+	</channel-type>
+	<channel-type id="button2TrigTime">
+		<item-type>DateTime</item-type>
+		<label>Button 3 Last Triggered</label>
+		<description>Button 3 Last Triggered Time</description>
+	</channel-type>
 	<channel-type id="rf0External">
 		<item-type>DateTime</item-type>
 		<label>RF Channel 1 Last triggered</label>
@@ -195,56 +269,75 @@
 		<description>RF Channel 4 Last Triggered Internally</description>
 	</channel-type>
 
-	<channel-type id="power">
-		<item-type>Number:Power</item-type>
-		<label>Power</label>
-		<description>Power</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="voltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage</label>
-		<description>Voltage</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="current">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Current</label>
-		<description>Current</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="cloudOnline">
+	<channel-type id="cloudOnline" advanced="true">
 		<item-type>String</item-type>
 		<label>Cloud Connected</label>
 		<description>Currently has connection to the cloud</description>
 	</channel-type>
-	<channel-type id="localOnline">
+	<channel-type id="localOnline" advanced="true">
 		<item-type>String</item-type>
 		<label>LAN Connected</label>
 		<description>Currently connected to LAN</description>
 	</channel-type>
-	<channel-type id="ipaddress">
+	<channel-type id="ipaddress" advanced="true">
 		<item-type>String</item-type>
-		<label>Local IP Address</label>
-		<description>Local IP Address</description>
+		<label>IP Address</label>
+		<description>Device IP Address</description>
 	</channel-type>
-	<channel-type id="rssi">
+	<channel-type id="rssi" advanced="true">
 		<item-type>Number</item-type>
 		<label>Signal Strength</label>
-		<description>Signal Strength</description>
+		<description>RSSI Signal Strength</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Temperature</description>
+		<description>Current temperature</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureMax">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Temperature Maximum</label>
+		<description>Maximum temperature recorded</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureMin">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Temperature Minimum</label>
+		<description>Minimum temperature recorded</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureAvg">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Temperature Average</label>
+		<description>Average temperature recorded</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>Humidity</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<description>Current humidity</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="humidityMax">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity Maximum</label>
+		<description>Maximum humidity recorded</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="humidityMin">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity Minimum</label>
+		<description>Minimum humidity recorded</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="humidityAvg">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity Average</label>
+		<description>Average humidity recorded</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="mainSwitch">
 		<item-type>Switch</item-type>
@@ -262,16 +355,266 @@
 		<label>Last triggered</label>
 		<description>Last Triggered</description>
 	</channel-type>
+
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion Alarm Active</label>
 		<description>Motion Alarm Active</description>
 	</channel-type>
+
+	<channel-type id="motion-contact">
+		<item-type>Contact</item-type>
+		<label>Motion Alarm Active</label>
+		<description>Motion Alarm Active</description>
+	</channel-type>
+
 	<channel-type id="battery">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Battery Level</label>
-		<description>Battery Level</description>
+		<label>Battery Voltage</label>
+		<description>Battery voltage</description>
 		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>Battery level</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="button-press">
+		<item-type>Contact</item-type>
+		<label>Button Press</label>
+		<description>Button press event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="brightness-state">
+		<item-type>String</item-type>
+		<label>Brightness State</label>
+		<description>Ambient brightness level</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Roller Shutter (UUID 258) specific channels -->
+	<channel-type id="roller-switch">
+		<item-type>Rollershutter</item-type>
+		<label>Roller Shutter Control</label>
+		<description>Control roller shutter (pause, open, close, stop)</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="roller-position">
+		<item-type>Number</item-type>
+		<label>Roller Shutter Position</label>
+		<description>Current position of the roller shutter (0-100)</description>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
+	</channel-type>
+
+	<!-- Power Monitoring with Extended Energy Tracking (UUID 276) specific channels -->
+	<channel-type id="week-kwh">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Weekly Energy Consumption</label>
+		<description>Energy consumption for the current week</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="year-kwh">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Yearly Energy Consumption</label>
+		<description>Energy consumption for the current year</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cost-day">
+		<item-type>Number:Currency</item-type>
+		<label>Daily Energy Cost</label>
+		<description>Energy cost for today</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cost-week">
+		<item-type>Number:Currency</item-type>
+		<label>Weekly Energy Cost</label>
+		<description>Energy cost for the current week</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cost-month">
+		<item-type>Number:Currency</item-type>
+		<label>Monthly Energy Cost</label>
+		<description>Energy cost for the current month</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cost-year">
+		<item-type>Number:Currency</item-type>
+		<label>Yearly Energy Cost</label>
+		<description>Energy cost for the current year</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="day-runtime">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Daily Runtime</label>
+		<description>Device runtime for today in hours</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="month-runtime">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Monthly Runtime</label>
+		<description>Device runtime for the current month in hours</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<!-- Air Quality Monitor (UUID 266) specific channels -->
+	<channel-type id="co2">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>CO2 Level</label>
+		<description>Carbon dioxide concentration in parts per million</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number</item-type>
+		<label>PM10 Level</label>
+		<description>Particulate Matter 10 micrometers or less concentration</description>
+		<state pattern="%.0f μg/m3" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pm2_5">
+		<item-type>Number</item-type>
+		<label>PM2.5 Level</label>
+		<description>Particulate Matter 2.5 micrometers or less concentration</description>
+		<state pattern="%.0f μg/m3" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureF">
+		<item-type unitHint="°F">Number:Temperature</item-type>
+		<label>Temperature (Fahrenheit)</label>
+		<description>Current temperature in Fahrenheit</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensorLight">
+		<item-type>Switch</item-type>
+		<label>Display Light</label>
+		<description>Control display/indicator light on/off</description>
+	</channel-type>
+
+	<channel-type id="sensorLightBr">
+		<item-type>Dimmer</item-type>
+		<label>Display Brightness</label>
+		<description>Display/indicator light brightness (0-100%, values 0-9 mapped to device minimum 10%)</description>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="voiceAlarm">
+		<item-type>Switch</item-type>
+		<label>Voice Alarm</label>
+		<description>Enable or disable voice alarm notifications</description>
+	</channel-type>
+
+	<!-- NSPanel Pro with Relay (UUID 278) - CPU temperature, storage info, outdoor air quality -->
+	<channel-type id="cpuTemperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>CPU Temperature</label>
+		<description>Device CPU temperature</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="storageTotal">
+		<item-type>String</item-type>
+		<label>Storage Total</label>
+		<description>Total device storage capacity</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="storageFree">
+		<item-type>String</item-type>
+		<label>Storage Free</label>
+		<description>Available free storage space</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="storageUsed">
+		<item-type>String</item-type>
+		<label>Storage Used</label>
+		<description>Used storage space</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="airQualityCo">
+		<item-type>Number</item-type>
+		<label>CO Level</label>
+		<description>Outdoor carbon monoxide concentration (µg/m³)</description>
+		<state pattern="%.2f µg/m³" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="airQualityNo2">
+		<item-type>Number</item-type>
+		<label>NO2 Level</label>
+		<description>Outdoor nitrogen dioxide concentration (µg/m³)</description>
+		<state pattern="%.2f µg/m³" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="airQualityO3">
+		<item-type>Number</item-type>
+		<label>O3 Level</label>
+		<description>Outdoor ozone concentration (µg/m³)</description>
+		<state pattern="%.2f µg/m³" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="airQualitySo2">
+		<item-type>Number</item-type>
+		<label>SO2 Level</label>
+		<description>Outdoor sulphur dioxide concentration (µg/m³)</description>
+		<state pattern="%.2f µg/m³" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="usEpaIndex">
+		<item-type>Number</item-type>
+		<label>US EPA AQI</label>
+		<description>US EPA Air Quality Index (1=Good, 2=Moderate, 3=Unhealthy for Sensitive Groups, 4=Unhealthy, 5=Very
+			Unhealthy, 6=Hazardous)</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gbDefraIndex">
+		<item-type>Number</item-type>
+		<label>UK DEFRA AQI</label>
+		<description>UK DEFRA Air Quality Index (1-10 scale)</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<!-- Version info channels (UUID 195 / UUID 278 - NSPanel Pro) -->
+	<channel-type id="fwVersion" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Device firmware version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sysVersion" advanced="true">
+		<item-type>String</item-type>
+		<label>System Version</label>
+		<description>Device system version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zigbeeVersion" advanced="true">
+		<item-type>String</item-type>
+		<label>ZigBee Version</label>
+		<description>ZigBee coordinator firmware version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="appVersion" advanced="true">
+		<item-type>String</item-type>
+		<label>App Version</label>
+		<description>Device application version</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
